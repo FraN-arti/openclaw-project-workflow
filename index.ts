@@ -36,11 +36,12 @@ export default definePluginEntry({
         maxCommits: Type.Optional(Type.Number({ description: "Maximum commits to show", default: 20 }))
       }),
       async execute(_id, params) {
-        // TODO: Implement git history analysis
+        const { executeGitHistory } = await import("./src/tools/git-history.js");
+        const result = await executeGitHistory(params);
         return {
           content: [{
             type: "text",
-            text: `Analyzing git history${params.filePath ? ` for ${params.filePath}` : ""}...`
+            text: result
           }]
         };
       }
