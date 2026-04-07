@@ -121,6 +121,9 @@ You choose → Plugin executes
 ### 🔍 Smart Code Analysis
 - **`project_analyze_codebase`** — Analyze project structure, dependencies, and architecture
 - **`project_gather_context`** — Automatically find all related files for a task
+  - Uses OpenClaw's `context-gatherer` subagent when available
+  - **Fallback mode:** Works even without subagent using keyword-based file search
+  - Cross-platform support (Windows, Linux, macOS)
 
 ### 📊 Git Integration
 - **`project_git_history`** — Analyze git history (like codemaps) - who changed what and when
@@ -200,7 +203,19 @@ project_github_analyze({ repo: "owner/repo", type: "pr", limit: 10 })
 
 ## Development Status
 
-🚧 **Work in Progress** — Core structure ready, implementing tools next.
+✅ **Ready to Use** — All 5 core tools implemented and tested.
+
+**Implemented:**
+- ✅ Git history analysis (`project_git_history`)
+- ✅ Context gathering with fallback (`project_gather_context`)
+- ✅ Integration checks (`project_check_integration`)
+- ✅ Codebase analysis (`project_analyze_codebase`)
+- ✅ GitHub integration via Composio (`project_github_analyze`)
+
+**Roadmap:**
+- 🔄 Smart hooks (before/after tool calls)
+- 🔄 Automated testing
+- 🔄 Plugin marketplace publication
 
 ## License
 
