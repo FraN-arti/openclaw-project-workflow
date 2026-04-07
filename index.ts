@@ -55,11 +55,12 @@ export default definePluginEntry({
         changes: Type.String({ description: "Description of planned changes" })
       }),
       async execute(_id, params) {
-        // TODO: Implement integration check
+        const { executeCheckIntegration } = await import("./src/tools/check-integration.js");
+        const result = await executeCheckIntegration(params);
         return {
           content: [{
             type: "text",
-            text: `Checking integration for ${params.files.length} file(s)...`
+            text: result
           }]
         };
       }
