@@ -73,11 +73,12 @@ export default definePluginEntry({
         files: Type.Optional(Type.Array(Type.String(), { description: "Starting files (optional)" }))
       }),
       async execute(_id, params) {
-        // TODO: Implement context gathering
+        const { executeGatherContext } = await import("./src/tools/gather-context.js");
+        const result = await executeGatherContext(params, api);
         return {
           content: [{
             type: "text",
-            text: `Gathering context for: ${params.task}...`
+            text: result
           }]
         };
       }
