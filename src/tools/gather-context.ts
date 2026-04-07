@@ -16,8 +16,10 @@ export async function executeGatherContext(
 
   try {
     // Try using context-gatherer subagent first
+    const idempotencyKey = `context-gatherer-${Date.now()}-${Math.random().toString(36).substring(7)}`;
     const { runId } = await api.runtime.subagent.run({
-      sessionKey: `agent:main:subagent:context-gatherer-${Date.now()}`,
+      idempotencyKey,
+      sessionKey: `agent:main:subagent:${idempotencyKey}`,
       message: `Find all files relevant to: ${task}${files ? `\n\nStarting files: ${files.join(", ")}` : ""}`,
       deliver: false,
     });
@@ -28,7 +30,10 @@ export async function executeGatherContext(
       timeoutMs: 60000,
     });
 
+    console.log('[project-workflow] Subagent result:', JSON.stringify(result, null, 2));
+
     if (!result || !result.output) {
+      console.warn('[project-workflow] No output from subagent');
       return `⚠️ Context gathering completed but no files found.\n\nTask: ${task}`;
     }
 
@@ -56,6 +61,7 @@ export async function executeGatherContext(
     return response;
   } catch (error: any) {
     // Fallback: use simple file search if context-gatherer is unavailable
+    console.error(`[project-workflow] context-gatherer failed:`, error);
     console.warn(`context-gatherer unavailable, using fallback: ${error.message}`);
     return fallbackContextGathering(task, files, cwd);
   }
