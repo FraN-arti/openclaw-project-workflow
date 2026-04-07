@@ -99,11 +99,12 @@ export default definePluginEntry({
         limit: Type.Optional(Type.Number({ description: "Maximum items to analyze", default: 10 }))
       }),
       async execute(_id, params) {
-        // TODO: Implement GitHub analysis via Composio
+        const { executeGithubAnalyze } = await import("./src/tools/github-analyze.js");
+        const result = await executeGithubAnalyze(params, api);
         return {
           content: [{
             type: "text",
-            text: `Analyzing ${params.type} in ${params.repo}...`
+            text: result
           }]
         };
       }
