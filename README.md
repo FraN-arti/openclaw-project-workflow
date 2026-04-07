@@ -1,14 +1,14 @@
 # Project Workflow Plugin
 
-> **Automate your AI agent for seamless GitHub workflow.** Stay on top of bugs, track completed work, and let your agent handle git history, code analysis, and PR management — all automatically.
-
 <div align="center">
 
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-2026.4.5-blue?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMkw0IDZWMTJDNCAyMC41IDEyIDIyIDEyIDIyQzEyIDIyIDIwIDIwLjUgMjAgMTJWNkwxMiAyWiIgZmlsbD0iI2ZmZmZmZiIvPjwvc3ZnPg==)](https://openclaw.ai)
 [![Composio](https://img.shields.io/badge/Composio-Integration-green?style=flat-square&logo=github)](https://composio.dev)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-**Stop repeating yourself.** Let your agent analyze git history, gather context, check dependencies, and manage GitHub — automatically.
+### **Stop repeating yourself.**
+
+Automate your AI agent for seamless GitHub workflow. Stay on top of bugs, track completed work, and let your agent handle git history, code analysis, dependency checks, and PR management — all automatically.
 
 </div>
 
