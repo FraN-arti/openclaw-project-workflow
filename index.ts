@@ -16,11 +16,12 @@ export default definePluginEntry({
         deep: Type.Optional(Type.Boolean({ description: "Deep analysis including all dependencies", default: false }))
       }),
       async execute(_id, params) {
-        // TODO: Implement codebase analysis
+        const { executeAnalyzeCodebase } = await import("./src/tools/analyze-codebase.js");
+        const result = await executeAnalyzeCodebase(params);
         return {
           content: [{
             type: "text",
-            text: `Analyzing codebase at ${params.projectPath || "workspace"}...`
+            text: result
           }]
         };
       }
