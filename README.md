@@ -2,6 +2,77 @@
 
 Advanced project workflow automation for OpenClaw with smart code analysis, git integration, and GitHub automation.
 
+## How It Works
+
+### 🔧 Hybrid Approach: Local + Remote
+
+This plugin uses a **hybrid approach** for maximum flexibility:
+
+#### **Local Git (Always Available)**
+- ✅ Works **without internet**
+- ✅ Works **without GitHub**
+- ✅ Analyzes your local repository
+- ✅ Creates commits **locally** (on your computer)
+
+**What is a "local commit"?**
+> A local commit saves your changes in git on your computer, but **does NOT send them to GitHub yet**.
+> 
+> Think of it like writing a letter and putting it in an envelope — it's ready to send, but still in your hands.
+> 
+> You decide when to push (send) it to GitHub.
+
+#### **GitHub Integration (Optional, via Composio)**
+- 🔄 Requires [Composio](https://composio.dev) setup
+- 🔄 Analyzes remote PRs, issues, commits
+- 🔄 Can push commits to GitHub
+- 🔄 Can create PRs automatically
+
+**The plugin automatically detects:**
+- ✅ Is git available? → Enables git features
+- ✅ Is there a remote repository? → Offers to push
+- ✅ Is Composio connected? → Enables GitHub features
+
+### 📋 Typical Workflow
+
+```
+You: "Add authentication to the API"
+
+Plugin automatically:
+1. ✅ Analyzes local git history
+2. ✅ Finds related files
+3. ✅ Checks dependencies
+4. ✅ Makes changes
+5. ✅ Creates commit locally: "feat(auth): add JWT authentication"
+
+Agent asks:
+"Changes ready! Detected remote: github.com/you/project
+Composio connected ✅
+
+What do you want to do?
+1. Push to main
+2. Create branch feature/auth and PR
+3. Keep local only"
+
+You choose → Plugin executes
+```
+
+### 🎯 What You Get
+
+**Without Composio (Local Only):**
+- Git history analysis
+- Code structure analysis
+- Smart commits with detailed messages
+- Dependency checking
+
+**With Composio (Local + GitHub):**
+- Everything above, PLUS:
+- Push to GitHub
+- Create PRs with auto-generated descriptions
+- Analyze existing PRs/issues
+- Link commits to issues
+
+---
+
 ## Features
 
 ### 🔍 Smart Code Analysis
