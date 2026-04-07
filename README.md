@@ -121,9 +121,9 @@ You choose → Plugin executes
 ### 🔍 Smart Code Analysis
 - **`project_analyze_codebase`** — Analyze project structure, dependencies, and architecture
 - **`project_gather_context`** — Automatically find all related files for a task
-  - Uses OpenClaw's `context-gatherer` subagent when available
-  - **Fallback mode:** Works even without subagent using keyword-based file search
+  - Keyword-based file search using Node.js fs API
   - Cross-platform support (Windows, Linux, macOS)
+  - No external dependencies required
 
 ### 📊 Git Integration
 - **`project_git_history`** — Analyze git history (like codemaps) - who changed what and when
@@ -149,61 +149,6 @@ npm install
 
 # Install in OpenClaw
 openclaw plugins install ./openclaw-project-workflow
-```
-
-### Recommended: Create `context-gatherer` Subagent
-
-For **faster and more accurate** file discovery, create a dedicated subagent.
-
-**Why?**
-- ⚡ Faster file analysis (uses a lightweight model)
-- 🎯 More accurate results (understands code structure and dependencies)
-- 💰 Cost-effective (uses a cheap model for simple tasks)
-
-**Without this subagent:** The plugin uses fallback keyword search (slower, less accurate).
-
-#### Setup:
-
-Add to `~/.openclaw/openclaw.json`:
-
-```json
-{
-  "agents": {
-    "list": [
-      {
-        "id": "context-gatherer",
-        "model": "your-fast-model",
-        "description": "Finds relevant files for development tasks"
-      }
-    ]
-  }
-}
-```
-
-**Recommended models** (fast and inexpensive):
-- `claude-haiku-4.5` (Anthropic)
-- `gpt-4o-mini` (OpenAI)
-- `gemini-2.0-flash-thinking-exp` (Google)
-- Any other fast, cheap model you have configured
-
-**Example with Claude Haiku:**
-```json
-{
-  "agents": {
-    "list": [
-      {
-        "id": "context-gatherer",
-        "model": "anthropic/claude-haiku-4.5",
-        "description": "Finds relevant files for development tasks"
-      }
-    ]
-  }
-}
-```
-
-After adding, restart OpenClaw Gateway:
-```bash
-openclaw gateway restart
 ```
 
 ## Configuration
