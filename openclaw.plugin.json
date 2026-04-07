@@ -1,0 +1,32 @@
+{
+  "id": "project-workflow",
+  "name": "Project Workflow",
+  "description": "Advanced project workflow automation with smart code analysis, git history tracking, and GitHub integration via Composio",
+  "version": "0.1.0",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "default": true,
+        "description": "Enable/disable the plugin"
+      },
+      "autoAnalyze": {
+        "type": "boolean",
+        "default": true,
+        "description": "Automatically analyze context before code changes"
+      },
+      "gitIntegration": {
+        "type": "boolean",
+        "default": true,
+        "description": "Enable git history analysis"
+      },
+      "githubIntegration": {
+        "type": "boolean",
+        "default": true,
+        "description": "Enable GitHub integration via Composio"
+      }
+    },
+    "additionalProperties": false
+  }
+}
