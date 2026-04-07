@@ -25,6 +25,26 @@ Special thanks to the OpenClaw and Composio communities for building incredible 
 
 ---
 
+## ⚙️ Requirements
+
+### Required
+- **Git** — Must be installed and available in PATH for local git features (history, blame, commits)
+- **Node.js 22+** — Required for OpenClaw
+
+### Optional
+- **[Composio](https://composio.dev)** — For GitHub integration (PRs, issues, remote repository analysis)
+  - Without Composio: All local features work (git history, code analysis, dependency checks)
+  - With Composio: Full GitHub automation (push, PR creation, issue tracking)
+
+**Check if Git is installed:**
+```bash
+git --version
+```
+
+If not installed, download from [git-scm.com](https://git-scm.com/downloads)
+
+---
+
 ## How It Works
 
 ### 🔧 Hybrid Approach: Local + Remote
