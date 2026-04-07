@@ -16,11 +16,16 @@ export async function executeGatherContext(
 
   try {
     // Try using context-gatherer subagent first
-    const result = await api.runtime.spawnSubagent({
-      agentId: "context-gatherer",
-      task: `Find all files relevant to: ${task}${files ? `\n\nStarting files: ${files.join(", ")}` : ""}`,
-      mode: "run",
-      timeoutSeconds: 60,
+    const { runId } = await api.runtime.subagent.run({
+      sessionKey: `agent:main:subagent:context-gatherer-${Date.now()}`,
+      message: `Find all files relevant to: ${task}${files ? `\n\nStarting files: ${files.join(", ")}` : ""}`,
+      deliver: false,
+    });
+
+    // Wait for completion
+    const result = await api.runtime.subagent.waitForRun({
+      runId,
+      timeoutMs: 60000,
     });
 
     if (!result || !result.output) {
