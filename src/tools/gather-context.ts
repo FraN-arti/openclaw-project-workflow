@@ -1,4 +1,4 @@
-import { execSync } from "child_process";
+import * as fs from "fs";
 import * as path from "path";
 
 /**
@@ -57,7 +57,7 @@ export async function executeGatherContext(
 }
 
 /**
- * Fallback context gathering using simple file search
+ * Fallback context gathering using simple file search (no shell commands)
  */
 function fallbackContextGathering(
   task: string,
@@ -121,34 +121,18 @@ function extractKeywords(task: string): string[] {
 }
 
 /**
- * Find relevant files using simple grep/find
+ * Find relevant files using fs.readdirSync (no shell commands)
  */
-function findRelevantFiles(cwd: string, keywords: string[]): string[] {
+function findRelevantFiles(cwd: string, keywords: string[], maxDepth: number = 5): string[] {
   const files = new Set<string>();
+  const extensions = new Set([".ts", ".js", ".tsx", ".jsx", ".py", ".java", ".go", ".rs", ".c", ".cpp", ".h"]);
 
   try {
-    // Find common source files
-    const extensions = [".ts", ".js", ".tsx", ".jsx", ".py", ".java", ".go", ".rs"];
-    const extPattern = extensions.map(ext => `*${ext}`).join(" -o -name ");
-
-    // Use find to get all source files (cross-platform)
-    let findCmd: string;
-    if (process.platform === "win32") {
-      // Windows: use dir /s /b
-      const extList = extensions.map(ext => `*${ext}`).join(" ");
-      findCmd = `dir /s /b ${extList}`;
-    } else {
-      // Unix: use find
-      findCmd = `find . -type f \\( -name ${extPattern} \\) 2>/dev/null | head -100`;
-    }
-
-    const allFiles = execSync(findCmd, { cwd, encoding: "utf-8", maxBuffer: 1024 * 1024 })
-      .split("\n")
-      .filter(f => f.trim())
-      .map(f => f.trim());
+    // Recursively scan directory
+    scanDirectory(cwd, cwd, extensions, files, 0, maxDepth);
 
     // Score files by keyword matches in filename
-    const scoredFiles = allFiles.map(file => {
+    const scoredFiles = Array.from(files).map(file => {
       const basename = path.basename(file).toLowerCase();
       const score = keywords.reduce((acc, keyword) => {
         return acc + (basename.includes(keyword) ? 1 : 0);
@@ -161,11 +145,55 @@ function findRelevantFiles(cwd: string, keywords: string[]): string[] {
       .filter(f => f.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, 20)
-      .map(f => f.file);
+      .map(f => path.relative(cwd, f.file));
 
     return topFiles;
   } catch (error) {
     console.warn("Fallback file search failed:", error);
     return [];
+  }
+}
+
+/**
+ * Recursively scan directory for source files
+ */
+function scanDirectory(
+  dir: string,
+  rootDir: string,
+  extensions: Set<string>,
+  results: Set<string>,
+  depth: number,
+  maxDepth: number
+): void {
+  if (depth > maxDepth) return;
+
+  try {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+
+      // Skip common ignore patterns
+      if (entry.name.startsWith(".") || 
+          entry.name === "node_modules" || 
+          entry.name === "dist" || 
+          entry.name === "build" ||
+          entry.name === "__pycache__" ||
+          entry.name === "target") {
+        continue;
+      }
+
+      if (entry.isDirectory()) {
+        scanDirectory(fullPath, rootDir, extensions, results, depth + 1, maxDepth);
+      } else if (entry.isFile()) {
+        const ext = path.extname(entry.name);
+        if (extensions.has(ext)) {
+          results.add(fullPath);
+        }
+      }
+    }
+  } catch (error) {
+    // Skip directories we can't read
+    console.warn(`Cannot read directory ${dir}:`, error);
   }
 }
