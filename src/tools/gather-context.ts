@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 /**
- * Gather context for a task using context-gatherer subagent with fallback
+ * Gather context for a task using file system search
  */
 export async function executeGatherContext(
   params: {
@@ -14,69 +14,7 @@ export async function executeGatherContext(
 ): Promise<string> {
   const { task, files, cwd = process.cwd() } = params;
 
-  try {
-    // Try using context-gatherer subagent first
-    const idempotencyKey = `context-gatherer-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-    const { runId } = await api.runtime.subagent.run({
-      idempotencyKey,
-      sessionKey: `agent:main:subagent:${idempotencyKey}`,
-      message: `Find all files relevant to: ${task}${files ? `\n\nStarting files: ${files.join(", ")}` : ""}`,
-      deliver: false,
-    });
-
-    // Wait for completion
-    const result = await api.runtime.subagent.waitForRun({
-      runId,
-      timeoutMs: 60000,
-    });
-
-    console.log('[project-workflow] Subagent result:', JSON.stringify(result, null, 2));
-
-    if (!result || !result.output) {
-      console.warn('[project-workflow] No output from subagent');
-      return `⚠️ Context gathering completed but no files found.\n\nTask: ${task}`;
-    }
-
-    // Parse the output to extract file list
-    const output = result.output;
-    
-    // Build formatted response
-    let response = `# 📁 Context for: "${task}"\n\n`;
-    
-    if (files && files.length > 0) {
-      response += `## Starting Files\n`;
-      for (const file of files) {
-        response += `- ${file}\n`;
-      }
-      response += `\n`;
-    }
-
-    response += `## Related Files Found\n\n`;
-    response += output;
-    
-    response += `\n\n---\n`;
-    response += `💡 **Tip:** These files were found by analyzing imports, dependencies, and code structure.\n`;
-    response += `Review them before making changes to understand the full context.`;
-
-    return response;
-  } catch (error: any) {
-    // Fallback: use simple file search if context-gatherer is unavailable
-    console.error(`[project-workflow] context-gatherer failed:`, error);
-    console.warn(`context-gatherer unavailable, using fallback: ${error.message}`);
-    return fallbackContextGathering(task, files, cwd);
-  }
-}
-
-/**
- * Fallback context gathering using simple file search (no shell commands)
- */
-function fallbackContextGathering(
-  task: string,
-  files?: string[],
-  cwd: string = process.cwd()
-): string {
   let response = `# 📁 Context for: "${task}"\n\n`;
-  response += `⚠️ **Note:** Using fallback search (context-gatherer subagent unavailable)\n\n`;
 
   if (files && files.length > 0) {
     response += `## Starting Files\n`;
@@ -107,11 +45,11 @@ function fallbackContextGathering(
     }
 
     response += `\n---\n`;
-    response += `💡 **Tip:** This is a basic keyword search. For better results, ensure context-gatherer subagent is available.\n`;
+    response += `💡 **Tip:** Files are matched by keywords in their names and paths.\n`;
 
     return response;
-  } catch (fallbackError: any) {
-    return `❌ Both context-gatherer and fallback search failed.\n\nTask: ${task}\nError: ${fallbackError.message}`;
+  } catch (error: any) {
+    return `❌ File search failed.\n\nTask: ${task}\nError: ${error.message}`;
   }
 }
 
