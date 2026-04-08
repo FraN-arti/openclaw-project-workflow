@@ -140,6 +140,9 @@ You choose → Plugin executes
 - **Smart commit suggestions** — Generates conventional commit messages based on file changes and git diff analysis
 - **Integration checks** — Warns about potential breaking changes and shows related files
 - **GitHub integration hints** — Suggests push/PR actions when remote repository detected
+- **Issue tracker integration** — Automatically detects branch issue numbers and suggests closing issues
+- **Automatic changelog generation** — Generates CHANGELOG.md from conventional commits
+- **Semantic versioning** — Suggests version bumps based on commit types
 
 📖 **[Read the Smart Hooks Guide](./SMART_HOOKS.md)** for detailed usage examples and workflow tips.
 
@@ -206,7 +209,7 @@ project_github_analyze({ repo: "owner/repo", type: "pr", limit: 10 })
 
 ## Development Status
 
-✅ **Production Ready** — All core features implemented and ready to use!
+✅ **Production Ready** — All core features implemented and tested!
 
 **Implemented:**
 - ✅ Git history analysis (`project_git_history`)
@@ -216,11 +219,15 @@ project_github_analyze({ repo: "owner/repo", type: "pr", limit: 10 })
 - ✅ GitHub integration via Composio (`project_github_analyze`)
 - ✅ Smart hooks (automatic analysis before/after edits)
 - ✅ Intelligent commit message generation
+- ✅ Issue tracker integration (auto-close issues)
+- ✅ Automatic changelog generation
+- ✅ Semantic versioning helper
+- ✅ GitHub Actions CI/CD
+- ✅ Comprehensive test suite (18 tests)
 
 **Roadmap:**
-- 🔄 Automated testing suite
 - 🔄 Plugin marketplace publication
-- 🔄 CI/CD pipeline
+- 🔄 Additional integrations (GitLab, Bitbucket)
 
 ## License
 

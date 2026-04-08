@@ -6,6 +6,11 @@
 import { execSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
+import { 
+  getBranchIssueNumber, 
+  formatIssueTrackerSuggestions,
+  enhanceCommitWithIssues 
+} from "../utils/issue-tracker.js";
 
 interface AfterEditContext {
   tool: string;
@@ -186,6 +191,26 @@ export async function handleAfterEdit(ctx: AfterEditContext, api: any): Promise<
   console.log(`  git add "${filePath}"`);
   console.log(`  git commit -m "${suggestion.fullMessage}"`);
   console.log("=".repeat(60) + "\n");
+
+  // Check for issue tracker integration
+  const branchIssue = getBranchIssueNumber();
+  if (branchIssue) {
+    const issueTrackerInfo = formatIssueTrackerSuggestions(
+      suggestion.fullMessage,
+      branchIssue
+    );
+    console.log(issueTrackerInfo);
+    
+    // Suggest enhanced commit message
+    const enhancedMessage = enhanceCommitWithIssues(
+      suggestion.fullMessage,
+      [branchIssue],
+      "fixes"
+    );
+    console.log("💡 Enhanced commit with issue reference:");
+    console.log(`  git commit -m "${enhancedMessage.replace(/\n/g, '" -m "')}"`);
+    console.log("");
+  }
 
   // Check for remote repository
   try {
