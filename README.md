@@ -135,10 +135,13 @@ You choose → Plugin executes
 - Automatic PR/issue linking
 - Code review automation
 
-### ⚡ Smart Hooks
-- **Auto-analysis before code changes** — Automatically gathers context before `edit`/`write`
-- **Smart commit suggestions** — Generates meaningful commit messages
-- **Integration checks** — Warns about potential breaking changes
+### ⚡ Smart Hooks (Automated Workflow)
+- **Auto-analysis before code changes** — Automatically analyzes git history, related files, and dependencies before `edit`/`write`
+- **Smart commit suggestions** — Generates conventional commit messages based on file changes and git diff analysis
+- **Integration checks** — Warns about potential breaking changes and shows related files
+- **GitHub integration hints** — Suggests push/PR actions when remote repository detected
+
+📖 **[Read the Smart Hooks Guide](./SMART_HOOKS.md)** for detailed usage examples and workflow tips.
 
 ## Installation
 
@@ -203,7 +206,7 @@ project_github_analyze({ repo: "owner/repo", type: "pr", limit: 10 })
 
 ## Development Status
 
-✅ **Ready to Use** — All 5 core tools implemented and tested.
+✅ **Production Ready** — All core features implemented and ready to use!
 
 **Implemented:**
 - ✅ Git history analysis (`project_git_history`)
@@ -211,11 +214,13 @@ project_github_analyze({ repo: "owner/repo", type: "pr", limit: 10 })
 - ✅ Integration checks (`project_check_integration`)
 - ✅ Codebase analysis (`project_analyze_codebase`)
 - ✅ GitHub integration via Composio (`project_github_analyze`)
+- ✅ Smart hooks (automatic analysis before/after edits)
+- ✅ Intelligent commit message generation
 
 **Roadmap:**
-- 🔄 Smart hooks (before/after tool calls)
-- 🔄 Automated testing
+- 🔄 Automated testing suite
 - 🔄 Plugin marketplace publication
+- 🔄 CI/CD pipeline
 
 ## License
 

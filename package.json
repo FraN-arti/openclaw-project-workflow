@@ -1,6 +1,6 @@
 {
   "name": "@archi/openclaw-project-workflow",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Advanced project workflow plugin for OpenClaw - smart code analysis, git integration, and GitHub automation",
   "keywords": [
@@ -14,7 +14,9 @@
   "author": "Archi",
   "license": "MIT",
   "openclaw": {
-    "extensions": ["./index.ts"],
+    "extensions": [
+      "./index.ts"
+    ],
     "compat": {
       "pluginApi": ">=2026.3.24-beta.2",
       "minGatewayVersion": "2026.3.24-beta.2"
@@ -28,6 +30,7 @@
     "@sinclair/typebox": "^0.32.0"
   },
   "devDependencies": {
+    "@types/node": "^25.5.2",
     "typescript": "^5.3.0"
   }
 }

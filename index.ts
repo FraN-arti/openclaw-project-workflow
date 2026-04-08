@@ -114,8 +114,8 @@ export default definePluginEntry({
     api.registerHook("before_tool_call", async (ctx) => {
       // Auto-analyze before edit/write
       if ((ctx.tool === "edit" || ctx.tool === "write") && api.config.autoAnalyze) {
-        // TODO: Implement auto-analysis
-        console.log(`[project-workflow] Auto-analyzing before ${ctx.tool}...`);
+        const { handleBeforeEdit } = await import("./src/hooks/before-edit.js");
+        return await handleBeforeEdit(ctx, api);
       }
       return { block: false };
     });
@@ -123,8 +123,8 @@ export default definePluginEntry({
     api.registerHook("after_tool_call", async (ctx) => {
       // Suggest commit after successful edit/write
       if ((ctx.tool === "edit" || ctx.tool === "write") && ctx.result?.ok) {
-        // TODO: Suggest smart commit message
-        console.log(`[project-workflow] Changes made, consider committing...`);
+        const { handleAfterEdit } = await import("./src/hooks/after-edit.js");
+        await handleAfterEdit(ctx, api);
       }
       return {};
     });
