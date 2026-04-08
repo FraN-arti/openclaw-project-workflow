@@ -225,10 +225,6 @@ project_github_analyze({ repo: "owner/repo", type: "pr", limit: 10 })
 - ✅ GitHub Actions CI/CD
 - ✅ Comprehensive test suite (18 tests)
 
-**Roadmap:**
-- 🔄 Plugin marketplace publication
-- 🔄 Additional integrations (GitLab, Bitbucket)
-
 ## License
 
 MIT
