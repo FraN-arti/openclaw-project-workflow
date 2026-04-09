@@ -1,7 +1,7 @@
 {
   "id": "project-workflow",
   "name": "Project Workflow",
-  "description": "Advanced project workflow automation with smart code analysis, git history tracking, and GitHub integration via Composio",
+  "description": "Advanced project workflow automation with smart code analysis, git history tracking, and GitHub REST API integration",
   "version": "0.1.0",
   "configSchema": {
     "type": "object",
@@ -23,8 +23,22 @@
       },
       "githubIntegration": {
         "type": "boolean",
-        "default": true,
-        "description": "Enable GitHub integration via Composio"
+        "default": false,
+        "description": "Enable GitHub integration (requires token)"
+      },
+      "github": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "GitHub Personal Access Token (classic with repo scope)"
+          },
+          "defaultRepo": {
+            "type": "string",
+            "description": "Default repository (owner/repo format)"
+          }
+        },
+        "description": "GitHub API configuration"
       }
     },
     "additionalProperties": false

@@ -19,9 +19,9 @@ Automate your AI agent for seamless GitHub workflow. Stay on top of bugs, track 
 This plugin is powered by amazing open-source projects:
 
 - **[OpenClaw](https://openclaw.ai)** — The AI assistant framework that makes this plugin possible
-- **[Composio](https://composio.dev)** — Seamless GitHub integration and 1000+ tool connections
+- **[GitHub REST API](https://docs.github.com/en/rest)** — Direct GitHub integration
 
-Special thanks to the OpenClaw and Composio communities for building incredible tools! 🚀
+Special thanks to the OpenClaw community for building incredible tools! 🚀
 
 ---
 
@@ -32,9 +32,9 @@ Special thanks to the OpenClaw and Composio communities for building incredible 
 - **Node.js 22+** — Required for OpenClaw
 
 ### Optional
-- **[Composio](https://composio.dev)** — For GitHub integration (PRs, issues, remote repository analysis)
-  - Without Composio: All local features work (git history, code analysis, dependency checks)
-  - With Composio: Full GitHub automation (push, PR creation, issue tracking)
+- **GitHub Personal Access Token** — For GitHub integration (PRs, issues, remote repository analysis)
+  - Without token: All local features work (git history, code analysis, dependency checks)
+  - With token: Full GitHub integration (analyze PRs, issues, commits)
 
 **Check if Git is installed:**
 ```bash
@@ -64,16 +64,15 @@ This plugin uses a **hybrid approach** for maximum flexibility:
 > 
 > You decide when to push (send) it to GitHub.
 
-#### **GitHub Integration (Optional, via Composio)**
-- 🔄 Requires [Composio](https://composio.dev) setup
+#### **GitHub Integration (Optional, via GitHub API)**
+- 🔄 Requires GitHub Personal Access Token
 - 🔄 Analyzes remote PRs, issues, commits
-- 🔄 Can push commits to GitHub
-- 🔄 Can create PRs automatically
+- 🔄 Direct REST API integration (no external dependencies)
 
 **The plugin automatically detects:**
 - ✅ Is git available? → Enables git features
 - ✅ Is there a remote repository? → Offers to push
-- ✅ Is Composio connected? → Enables GitHub features
+- ✅ Is GitHub token configured? → Enables GitHub features
 
 ### 📋 Typical Workflow
 
@@ -107,12 +106,11 @@ You choose → Plugin executes
 - Smart commits with detailed messages
 - Dependency checking
 
-**With Composio (Local + GitHub):**
+**With GitHub Token (Local + GitHub):**
 - Everything above, PLUS:
-- Push to GitHub
-- Create PRs with auto-generated descriptions
 - Analyze existing PRs/issues
-- Link commits to issues
+- View commit history from GitHub
+- Track remote repository activity
 
 ---
 
@@ -130,10 +128,10 @@ You choose → Plugin executes
 - Git blame integration
 - Commit history analysis
 
-### 🔗 GitHub Integration (via Composio)
+### 🔗 GitHub Integration (via GitHub REST API)
 - **`project_github_analyze`** — Analyze PRs, issues, commits
-- Automatic PR/issue linking
-- Code review automation
+- Direct GitHub API integration
+- No external dependencies
 
 ### ⚡ Smart Hooks (Automated Workflow)
 - **Auto-analysis before code changes** — Automatically analyzes git history, related files, and dependencies before `edit`/`write`
@@ -159,6 +157,8 @@ openclaw plugins install ./openclaw-project-workflow
 
 ## Configuration
 
+### Basic Configuration
+
 Add to `~/.openclaw/openclaw.json`:
 
 ```json
@@ -170,13 +170,48 @@ Add to `~/.openclaw/openclaw.json`:
         "config": {
           "autoAnalyze": true,
           "gitIntegration": true,
-          "githubIntegration": true
+          "githubIntegration": false
         }
       }
     }
   }
 }
 ```
+
+### GitHub Integration Setup
+
+**1. Generate GitHub Personal Access Token:**
+
+- Go to: https://github.com/settings/tokens
+- Click "Generate new token (classic)"
+- Select scopes:
+  - ✅ `repo` (Full control of private repositories)
+- Copy the token (starts with `ghp_`)
+
+**2. Add token to config:**
+
+```json
+{
+  "plugins": {
+    "entries": {
+      "project-workflow": {
+        "enabled": true,
+        "config": {
+          "autoAnalyze": true,
+          "gitIntegration": true,
+          "githubIntegration": true,
+          "github": {
+            "token": "ghp_your_token_here",
+            "defaultRepo": "owner/repo"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+**⚠️ Security Note:** Keep your token private! Never commit it to git.
 
 ## Usage
 

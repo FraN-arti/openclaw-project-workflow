@@ -1,5 +1,5 @@
 /**
- * Analyze GitHub repository data via Composio
+ * Analyze GitHub repository data via GitHub REST API
  */
 export async function executeGithubAnalyze(
   params: {
@@ -10,6 +10,17 @@ export async function executeGithubAnalyze(
   api: any
 ): Promise<string> {
   const { repo, type, limit = 10 } = params;
+
+  // Check if GitHub integration is enabled
+  if (!api.config.githubIntegration) {
+    return `❌ GitHub integration is disabled.\n\nEnable it in config:\n{\n  "githubIntegration": true,\n  "github": {\n    "token": "ghp_your_token_here"\n  }\n}`;
+  }
+
+  // Check if token is configured
+  const token = api.config.github?.token;
+  if (!token) {
+    return `❌ GitHub token not configured.\n\nAdd to your OpenClaw config (~/.openclaw/openclaw.json):\n\n{\n  "plugins": {\n    "entries": {\n      "project-workflow": {\n        "config": {\n          "githubIntegration": true,\n          "github": {\n            "token": "ghp_your_token_here",\n            "defaultRepo": "owner/repo"\n          }\n        }\n      }\n    }\n  }\n}\n\nGet token at: https://github.com/settings/tokens\nRequired scope: repo (Full control of private repositories)`;
+  }
 
   // Parse repo (owner/repo)
   const [owner, repoName] = repo.split("/");
@@ -22,13 +33,13 @@ export async function executeGithubAnalyze(
 
     switch (type) {
       case "pr":
-        result = await analyzePRs(owner, repoName, limit, api);
+        result = await analyzePRs(owner, repoName, limit, token);
         break;
       case "issues":
-        result = await analyzeIssues(owner, repoName, limit, api);
+        result = await analyzeIssues(owner, repoName, limit, token);
         break;
       case "commits":
-        result = await analyzeCommits(owner, repoName, limit, api);
+        result = await analyzeCommits(owner, repoName, limit, token);
         break;
       default:
         return `❌ Unknown type: ${type}. Use: pr, issues, or commits`;
@@ -36,8 +47,11 @@ export async function executeGithubAnalyze(
 
     return result;
   } catch (error: any) {
-    if (error.message?.includes("Composio")) {
-      return `❌ GitHub integration requires Composio.\n\nPlease set up Composio first:\n1. Install: npm install -g composio-core\n2. Configure: openclaw composio setup --key <your-key>\n3. Connect GitHub at: https://dashboard.composio.dev`;
+    if (error.message?.includes("401")) {
+      return `❌ GitHub authentication failed. Check your token.\n\nToken should have 'repo' scope.\nGet new token at: https://github.com/settings/tokens`;
+    }
+    if (error.message?.includes("404")) {
+      return `❌ Repository not found: ${owner}/${repoName}\n\nMake sure:\n1. Repository exists\n2. You have access to it\n3. Token has correct permissions`;
     }
     return `❌ GitHub analysis failed: ${error.message}`;
   }
@@ -46,27 +60,29 @@ export async function executeGithubAnalyze(
 /**
  * Analyze Pull Requests
  */
-async function analyzePRs(owner: string, repo: string, limit: number, api: any): Promise<string> {
-  // Use Composio GitHub tools
-  const result = await api.runtime.callTool("GITHUB_LIST_PULL_REQUESTS", {
-    owner,
-    repo,
-    state: "all",
-    per_page: limit,
+async function analyzePRs(owner: string, repo: string, limit: number, token: string): Promise<string> {
+  const url = `https://api.github.com/repos/${owner}/${repo}/pulls?state=all&per_page=${limit}`;
+  
+  const response = await fetch(url, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "OpenClaw-Project-Workflow"
+    }
   });
 
-  if (!result || !result.data) {
+  if (!response.ok) {
+    throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+  }
+
+  const prs = await response.json();
+
+  if (!Array.isArray(prs) || prs.length === 0) {
     return `No PRs found in ${owner}/${repo}`;
   }
 
   let output = `# 🔗 GitHub PRs: ${owner}/${repo}\n\n`;
-  
-  const prs = result.data.pull_requests || result.data || [];
-  
-  if (prs.length === 0) {
-    return `No PRs found in ${owner}/${repo}`;
-  }
-
   output += `## Recent Pull Requests (${prs.length})\n\n`;
   
   for (const pr of prs) {
@@ -90,32 +106,40 @@ async function analyzePRs(owner: string, repo: string, limit: number, api: any):
 /**
  * Analyze Issues
  */
-async function analyzeIssues(owner: string, repo: string, limit: number, api: any): Promise<string> {
-  const result = await api.runtime.callTool("GITHUB_LIST_REPOSITORY_ISSUES", {
-    owner,
-    repo,
-    state: "all",
-    per_page: limit,
+async function analyzeIssues(owner: string, repo: string, limit: number, token: string): Promise<string> {
+  const url = `https://api.github.com/repos/${owner}/${repo}/issues?state=all&per_page=${limit}`;
+  
+  const response = await fetch(url, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "OpenClaw-Project-Workflow"
+    }
   });
 
-  if (!result || !result.data) {
+  if (!response.ok) {
+    throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+  }
+
+  const issues = await response.json();
+
+  if (!Array.isArray(issues) || issues.length === 0) {
     return `No issues found in ${owner}/${repo}`;
   }
 
   let output = `# 🐛 GitHub Issues: ${owner}/${repo}\n\n`;
   
-  const issues = result.data.issues || result.data || [];
+  // Filter out PRs (they appear in issues list too)
+  const realIssues = issues.filter(issue => !issue.pull_request);
   
-  if (issues.length === 0) {
-    return `No issues found in ${owner}/${repo}`;
+  if (realIssues.length === 0) {
+    return `No issues found in ${owner}/${repo} (only PRs)`;
   }
 
-  output += `## Recent Issues (${issues.length})\n\n`;
+  output += `## Recent Issues (${realIssues.length})\n\n`;
   
-  for (const issue of issues) {
-    // Skip PRs (they appear in issues list too)
-    if (issue.pull_request) continue;
-
+  for (const issue of realIssues) {
     const state = issue.state === "open" ? "🟢 Open" : "🔴 Closed";
     const date = new Date(issue.created_at).toISOString().split("T")[0];
     output += `### #${issue.number}: ${issue.title}\n`;
@@ -137,25 +161,29 @@ async function analyzeIssues(owner: string, repo: string, limit: number, api: an
 /**
  * Analyze Commits
  */
-async function analyzeCommits(owner: string, repo: string, limit: number, api: any): Promise<string> {
-  const result = await api.runtime.callTool("GITHUB_LIST_COMMITS", {
-    owner,
-    repo,
-    per_page: limit,
+async function analyzeCommits(owner: string, repo: string, limit: number, token: string): Promise<string> {
+  const url = `https://api.github.com/repos/${owner}/${repo}/commits?per_page=${limit}`;
+  
+  const response = await fetch(url, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "OpenClaw-Project-Workflow"
+    }
   });
 
-  if (!result || !result.data) {
+  if (!response.ok) {
+    throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+  }
+
+  const commits = await response.json();
+
+  if (!Array.isArray(commits) || commits.length === 0) {
     return `No commits found in ${owner}/${repo}`;
   }
 
   let output = `# 📝 GitHub Commits: ${owner}/${repo}\n\n`;
-  
-  const commits = result.data.commits || result.data || [];
-  
-  if (commits.length === 0) {
-    return `No commits found in ${owner}/${repo}`;
-  }
-
   output += `## Recent Commits (${commits.length})\n\n`;
   
   for (const commit of commits) {

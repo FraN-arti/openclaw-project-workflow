@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-04-09
+
+### Changed
+- **GitHub Integration** - Replaced Composio with direct GitHub REST API
+  - No external dependencies required
+  - Uses native fetch API
+  - GitHub Personal Access Token authentication
+  - Direct API calls to GitHub endpoints
+- **Configuration** - Added `github.token` and `github.defaultRepo` options
+- **README** - Updated with GitHub token setup instructions
+
+### Removed
+- Composio dependency for GitHub integration
+
 ## [0.3.0] - 2026-04-08
 
 ### Added

@@ -2,7 +2,7 @@
   "name": "@archi/openclaw-project-workflow",
   "version": "0.3.0",
   "type": "module",
-  "description": "Advanced project workflow plugin for OpenClaw - smart code analysis, git integration, and GitHub automation",
+  "description": "Advanced project workflow plugin for OpenClaw - smart code analysis, git integration, and GitHub REST API automation",
   "keywords": [
     "openclaw",
     "plugin",
