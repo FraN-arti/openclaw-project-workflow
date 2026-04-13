@@ -5,7 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.0] - 2026-04-09
+## [0.4.0] - 2026-04-13
+
+### Added
+- **🔍 Issue Scanner** (`project_scan_issues`) - Automatic codebase issue detection
+  - Scans for TODO, FIXME, deprecated APIs, security issues
+  - Groups by priority (critical, high, medium, low)
+  - Supports multiple languages (TypeScript, JavaScript, Java, Python, Go, Rust)
+  - Optional auto-create GitHub issues
+- **📊 Health Dashboard** (`project_health_dashboard`) - Live project health monitoring
+  - Real-time issue tracking and trends
+  - Health score calculation (0-100)
+  - Issues grouped by labels
+  - 7-day trend analysis
+  - Average time to close metrics
+  - Actionable recommendations
+- **💡 Smart Commit** (`project_smart_commit`) - AI-powered commit message generation
+  - Automatic conventional commit format
+  - Analyzes git diff for context
+  - Detects commit type (feat/fix/refactor/docs/test/chore)
+  - Extracts scope from file paths
+  - Identifies breaking changes
+  - Links related issues automatically
+  - Detailed commit body with file list
+- **🔍 PR Review Handler** (`project_pr_review_handler`) - Automated PR review management
+  - Fetches and analyzes PR review comments
+  - Groups comments by file
+  - Suggests fixes for common patterns
+  - Three modes: auto, suggest, manual
+  - Actionable recommendations
+- **🏥 Health Check** (`project_health_check`) - Comprehensive project health analysis
+  - Tests: coverage, failing tests, missing tests
+  - Dependencies: outdated packages, vulnerabilities
+  - Security: npm audit, hardcoded secrets, unsafe patterns
+  - Performance: dependency count, bundle size
+  - Code Quality: ESLint, Prettier configuration
+  - Documentation: README completeness
+  - Overall health score with recommendations
+
+### Changed
+- Updated plugin description to reflect new capabilities
+- Enhanced tool registration with 6 new tools (total: 11 tools)
+
+### Technical Details
+- All new tools support GitHub REST API integration
+- Consistent error handling and user feedback
+- Markdown-formatted output for readability
+- JSON output support for programmatic use
+
+## [0.3.0] - 2026-04-09
 
 ### Changed
 - **GitHub Integration** - Replaced Composio with direct GitHub REST API

@@ -110,6 +110,114 @@ export default definePluginEntry({
       }
     });
 
+    api.registerTool({
+      name: "project_scan_issues",
+      description: "Scan codebase for issues (TODOs, FIXMEs, deprecated APIs, security issues)",
+      parameters: Type.Object({
+        projectPath: Type.Optional(Type.String({ description: "Path to project root (defaults to workspace)" })),
+        scanTypes: Type.Optional(Type.Array(Type.String(), { description: "Types to scan: todos, bugs, deprecated, security", default: ["todos", "bugs", "deprecated", "security"] })),
+        autoCreate: Type.Optional(Type.Boolean({ description: "Automatically create GitHub issues", default: false }))
+      }),
+      async execute(_id, params) {
+        const { executeScanIssues } = await import("./src/tools/scan-issues.js");
+        const result = await executeScanIssues(params);
+        return {
+          content: [{
+            type: "text",
+            text: result
+          }]
+        };
+      }
+    });
+
+    api.registerTool({
+      name: "project_health_dashboard",
+      description: "Generate project health dashboard with issues, trends, and problem map",
+      parameters: Type.Object({
+        repo: Type.String({ description: "Repository name (owner/repo)" }),
+        format: Type.Optional(Type.Union([Type.Literal("markdown"), Type.Literal("html"), Type.Literal("json")], { description: "Output format", default: "markdown" }))
+      }),
+      async execute(_id, params) {
+        const { executeHealthDashboard } = await import("./src/tools/health-dashboard.js");
+        const result = await executeHealthDashboard(params, api);
+        return {
+          content: [{
+            type: "text",
+            text: result
+          }]
+        };
+      }
+    });
+
+    api.registerTool({
+      name: "project_smart_commit",
+      description: "Generate smart commit with AI-powered conventional commit message",
+      parameters: Type.Object({
+        files: Type.Optional(Type.Array(Type.String(), { description: "Files to commit (empty = all changed files)" })),
+        autoGenerate: Type.Optional(Type.Boolean({ description: "Auto-generate commit message", default: true })),
+        includeContext: Type.Optional(Type.Boolean({ description: "Include detailed context in commit body", default: true })),
+        push: Type.Optional(Type.Boolean({ description: "Push after commit", default: false }))
+      }),
+      async execute(_id, params) {
+        const { executeSmartCommit } = await import("./src/tools/smart-commit.js");
+        const result = await executeSmartCommit(params);
+        return {
+          content: [{
+            type: "text",
+            text: result
+          }]
+        };
+      }
+    });
+
+    api.registerTool({
+      name: "project_pr_review_handler",
+      description: "Handle PR review comments - analyze, suggest fixes, and respond",
+      parameters: Type.Object({
+        repo: Type.String({ description: "Repository name (owner/repo)" }),
+        prNumber: Type.Number({ description: "Pull request number" }),
+        mode: Type.Optional(Type.Union([Type.Literal("auto"), Type.Literal("suggest"), Type.Literal("manual")], { description: "Handling mode", default: "suggest" }))
+      }),
+      async execute(_id, params) {
+        const { executePrReviewHandler } = await import("./src/tools/pr-review-handler.js");
+        const result = await executePrReviewHandler(params, api);
+        return {
+          content: [{
+            type: "text",
+            text: result
+          }]
+        };
+      }
+    });
+
+    api.registerTool({
+      name: "project_health_check",
+      description: "Comprehensive project health check (tests, dependencies, security, performance, code quality, documentation)",
+      parameters: Type.Object({
+        projectPath: Type.Optional(Type.String({ description: "Path to project root (defaults to workspace)" })),
+        checks: Type.Optional(Type.Object({
+          tests: Type.Optional(Type.Boolean({ default: true })),
+          dependencies: Type.Optional(Type.Boolean({ default: true })),
+          security: Type.Optional(Type.Boolean({ default: true })),
+          performance: Type.Optional(Type.Boolean({ default: true })),
+          codeQuality: Type.Optional(Type.Boolean({ default: true })),
+          documentation: Type.Optional(Type.Boolean({ default: true }))
+        })),
+        autoFix: Type.Optional(Type.Boolean({ description: "Attempt to auto-fix issues", default: false })),
+        reportFormat: Type.Optional(Type.Union([Type.Literal("markdown"), Type.Literal("html"), Type.Literal("json")], { default: "markdown" }))
+      }),
+      async execute(_id, params) {
+        const { executeHealthCheck } = await import("./src/tools/health-check.js");
+        const result = await executeHealthCheck(params);
+        return {
+          content: [{
+            type: "text",
+            text: result
+          }]
+        };
+      }
+    });
+
     // Register hooks
     api.registerHook("before_tool_call", async (ctx) => {
       // Auto-analyze before edit/write

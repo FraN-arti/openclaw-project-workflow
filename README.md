@@ -122,16 +122,46 @@ You choose → Plugin executes
   - Keyword-based file search using Node.js fs API
   - Cross-platform support (Windows, Linux, macOS)
   - No external dependencies required
+- **`project_scan_issues`** — Scan codebase for issues (TODOs, FIXMEs, deprecated APIs, security)
+  - Automatic issue detection
+  - Priority grouping (critical, high, medium, low)
+  - Multi-language support
+  - Optional GitHub issue creation
 
 ### 📊 Git Integration
 - **`project_git_history`** — Analyze git history (like codemaps) - who changed what and when
+- **`project_smart_commit`** — AI-powered conventional commit message generation
+  - Automatic commit type detection (feat/fix/refactor/docs/test/chore)
+  - Scope extraction from file paths
+  - Breaking change detection
+  - Related issue linking
+  - Detailed commit body with context
 - Git blame integration
 - Commit history analysis
 
 ### 🔗 GitHub Integration (via GitHub REST API)
 - **`project_github_analyze`** — Analyze PRs, issues, commits
+- **`project_health_dashboard`** — Live project health monitoring
+  - Real-time issue tracking and trends
+  - Health score calculation (0-100)
+  - 7-day trend analysis
+  - Actionable recommendations
+- **`project_pr_review_handler`** — Automated PR review management
+  - Analyze review comments
+  - Suggest fixes for common patterns
+  - Three modes: auto, suggest, manual
 - Direct GitHub API integration
 - No external dependencies
+
+### 🏥 Project Health
+- **`project_health_check`** — Comprehensive health analysis
+  - Tests: coverage, failing tests, missing tests
+  - Dependencies: outdated packages, vulnerabilities
+  - Security: npm audit, hardcoded secrets, unsafe patterns
+  - Performance: dependency count, bundle size
+  - Code Quality: ESLint, Prettier configuration
+  - Documentation: README completeness
+  - Overall health score with recommendations
 
 ### ⚡ Smart Hooks (Automated Workflow)
 - **Auto-analysis before code changes** — Automatically analyzes git history, related files, and dependencies before `edit`/`write`
